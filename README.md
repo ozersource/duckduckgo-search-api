@@ -31,6 +31,7 @@ results = ddg_api.search("Google")
 ## Success request
 
 Search results are returned as a Python dictionary. Each result contains the page title, URL, and a description
+~ 20 results per input ~
 
 ```json
 {
