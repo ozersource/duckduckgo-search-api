@@ -14,7 +14,7 @@ pip install duckduckgo_search_api
 
 The `Duckduckgo` class offers the following main methods:
 
-- `search(query)`: Accepts a query string and returns search results.
+- `search(query)`: Accepts a query string and returns search results ( ~ 20 results per input ~ )
 
 ## Usage
 
@@ -31,7 +31,7 @@ results = ddg_api.search("Google")
 ## Success request
 
 Search results are returned as a Python dictionary. Each result contains the page title, URL, and a description
-~ 20 results per input ~
+
 
 ```json
 {
