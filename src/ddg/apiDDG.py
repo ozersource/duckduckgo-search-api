@@ -1,8 +1,6 @@
-import time
-
 import requests
 from bs4 import BeautifulSoup
-from proxies import get_random_proxy, load_proxies
+import random
 
 
 class Duckduckgo:
@@ -10,7 +8,7 @@ class Duckduckgo:
     def __init__(self, proxies=None):
 
         if proxies is not None:
-            self.proxies_direct_list = load_proxies(proxies)
+            self.proxies_direct_list = self.__load_proxies(proxies)
         else:
             self.proxies_direct_list = None
         self.endpoint = 'https://html.duckduckgo.com/html/'
@@ -23,6 +21,44 @@ class Duckduckgo:
             'Upgrade-Insecure-Requests': '1',
             'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
         }
+
+    def __load_proxies(self, input):
+        if isinstance(input, str):
+            with open(input, 'r') as file:
+                proxies = file.readlines()
+            proxy_list = [proxy.strip() for proxy in proxies]
+        elif isinstance(input, list):
+            proxy_list = input
+        else:
+            raise ValueError("Error format input")
+
+        formatted_proxies = self.__format_proxies(proxy_list)
+        if len(formatted_proxies) == 0:
+            raise ValueError("Error format proxies input")
+        return formatted_proxies
+
+    def __format_proxies(self,proxies):
+        formatted_proxy_list = []
+        for proxy in proxies:
+            try:
+                ip_port, user_pass = proxy.split('@')
+                formatted_proxy = f"{user_pass}@{ip_port}"
+                formatted_proxy_list.append(formatted_proxy)
+            except ValueError:
+                continue
+        return formatted_proxy_list
+
+    def __get_random_proxy(self,proxy_list):
+
+        if not proxy_list:
+            raise ValueError("Empty list")
+
+        random_proxy = random.choice(proxy_list)
+        proxy_dict = {
+            'http': f"http://{random_proxy}",
+            'https': f"http://{random_proxy}"
+        }
+        return proxy_dict
 
     def __parse_response(self, response):
         soup = BeautifulSoup(response, 'html.parser')
@@ -40,8 +76,8 @@ class Duckduckgo:
         params = {'q': query, "b": ""}
         try:
             if self.proxies_direct_list is not None:
-                response = requests.post(self.endpoint, data=params, headers=self.headers,proxies=get_random_proxy(self.proxies_direct_list), timeout=5)
-                print(response.content)
+                response = requests.post(self.endpoint, data=params, headers=self.headers,proxies=self.__get_random_proxy(self.proxies_direct_list), timeout=5)
+                #print(response.content)
             else:
                 response = requests.post(self.endpoint, data=params, headers=self.headers, timeout=5)
             #print(response.content)
