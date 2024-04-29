@@ -1,6 +1,6 @@
 # DuckDuckGoSearchApi
 
-DuckDuckGoSearchApi is a Python library that provides a simple and direct interface for interacting with the DuckDuckGo API. This library is designed to simplify searches and the analysis of results from DuckDuckGo.
+Simple and direct interface for DuckDuckGo API. This library is designed to simplify searches and the analysis of results from DuckDuckGo.
 
 ## Instalation
 
@@ -14,24 +14,46 @@ pip install duckduckgo_search_api
 
 The `Duckduckgo` class offers the following main methods:
 
-- `search(query)`: Accepts a query string and returns search results ( ~ 20 results per input ~ )
+- `search(query)`: Accepts a query string and returns top **~20  search results** 
+
 
 ## Usage
 
-Here's an example of how to use the DuckDuckGoSearchApi:
+**The use of proxies is recommended**
+
+The proxy format should be: `ip:port@user:pass`.
+
+Proxies can be loaded from a text file (.txt) adhering to the following format:
+```
+ip:port@user:pass
+ip:port@user:pass
+ip:port@user:pass
+...
+```
+
+Alternatively, proxies can be specified directly using a Python dictionary as per the format shown above.
 
 ```python
 from ddg import Duckduckgo
 
-ddg_api = Duckduckgo()
+# Load proxies from a file
+ddg_api = Duckduckgo(proxies="proxies.txt")
+results = ddg_api.search("Google")
+```
 
+If the proxies parameter in the constructor is null, the search will proceed without using any proxies.
+
+```python
+from ddg import Duckduckgo
+
+# No proxies used
+ddg_api = Duckduckgo()
 results = ddg_api.search("Google")
 ```
 
 ## Success request
 
 Search results are returned as a Python dictionary. Each result contains the page title, URL, and a description
-
 
 ```json
 {
