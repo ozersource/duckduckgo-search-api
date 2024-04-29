@@ -1,10 +1,18 @@
+import time
+
 import requests
 from bs4 import BeautifulSoup
+from proxies import get_random_proxy, load_proxies
 
 
 class Duckduckgo:
 
-    def __init__(self):
+    def __init__(self, proxies=None):
+
+        if proxies is not None:
+            self.proxies_direct_list = load_proxies(proxies)
+        else:
+            self.proxies_direct_list = None
         self.endpoint = 'https://html.duckduckgo.com/html/'
         self.headers = {
             'Cache-Control': 'no-cache',
@@ -31,7 +39,12 @@ class Duckduckgo:
     def search(self, query):
         params = {'q': query, "b": ""}
         try:
-            response = requests.post(self.endpoint, data=params, headers=self.headers)
+            if self.proxies_direct_list is not None:
+                response = requests.post(self.endpoint, data=params, headers=self.headers,proxies=get_random_proxy(self.proxies_direct_list), timeout=5)
+                print(response.content)
+            else:
+                response = requests.post(self.endpoint, data=params, headers=self.headers, timeout=5)
+            #print(response.content)
             response.raise_for_status()  # This will raise an HTTPError if the status is 4xx, 5xx
             return self.__parse_response(response.content)
         except requests.exceptions.RequestException as e:
@@ -39,4 +52,6 @@ class Duckduckgo:
                     "message": f"Error making request: {e}"}
         except Exception as e:
             return {"success": False, "statusCode": None, "message": f"Error parsing response: {e}"}
+
+
 
